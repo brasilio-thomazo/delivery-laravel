@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableProdutos extends Migration
+class CreateProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,17 @@ class CreateTableProdutos extends Migration
      */
     public function up()
     {
-        Schema::create('table_produtos', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string("name", 50);
-            $table->foreign("id_type")->references("id")->on("tipos_produto")->cascadeOnDelete();
-            $table->foreign("id_category")->references("id")->on("categorias_produto")->cascadeOnDelete();
+            $table->unsignedBigInteger('id_type');
+            $table->unsignedBigInteger('id_category');
             $table->string("description")->nullable();
             $table->float("cost");
             $table->float("price");
             $table->timestamps();
+            $table->foreign('id_type')->references('id')->on('product_types')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('id_category')->references('id')->on('product_categories')->onUpdate('cascade')->onDelete('cascade');
             $table->unique(["name", "id_type", "id_category"]);
         });
     }
@@ -33,6 +35,6 @@ class CreateTableProdutos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_produtos');
+        Schema::dropIfExists('products');
     }
 }

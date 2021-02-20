@@ -1,18 +1,24 @@
-require('./bootstrap');
+require("./bootstrap");
+require("../css/app.scss");
+require("bootstrap");
 
-// Import modules...
-import { createApp, h } from 'vue';
-import { App as InertiaApp, plugin as InertiaPlugin } from '@inertiajs/inertia-vue3';
+import { App, plugin } from "@inertiajs/inertia-vue";
+import Vue from "vue";
+import VueCurrencyInput from "vue-currency-input";
+import VueTheMask from "vue-the-mask";
 
-const el = document.getElementById('app');
-
-createApp({
-    render: () =>
-        h(InertiaApp, {
-            initialPage: JSON.parse(el.dataset.page),
-            resolveComponent: (name) => require(`./Pages/${name}`).default,
-        }),
-})
-    .mixin({ methods: { route } })
-    .use(InertiaPlugin)
-    .mount(el);
+Vue.use(plugin)
+  .use(VueTheMask)
+  .use(VueCurrencyInput, {
+    globalOptions: { currency: "BRL" },
+  });
+const el = document.getElementById("app");
+new Vue({
+  render: (h) =>
+    h(App, {
+      props: {
+        initialPage: JSON.parse(el.dataset.page),
+        resolveComponent: (name) => require(`./pages/${name}`).default,
+      },
+    }),
+}).$mount(el);

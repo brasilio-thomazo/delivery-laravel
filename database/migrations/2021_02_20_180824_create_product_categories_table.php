@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTableTiposProduto extends Migration
+class CreateProductCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateTableTiposProduto extends Migration
      */
     public function up()
     {
-        Schema::create('table_tipos_produto', function (Blueprint $table) {
+        Schema::create('product_categories', function (Blueprint $table) {
             $table->id();
-            $table->string("name", 50)->unique();
+            $table->string("name")->unique();
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ class CreateTableTiposProduto extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_tipos_produto');
+        Schema::dropIfExists('product_categories');
     }
 }
