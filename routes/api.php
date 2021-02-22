@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ApiProductCategoryController;
+use App\Http\Controllers\ApiProductTypeController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -22,5 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResources([
     "client" => ClientController::class,
-    "product" => ProductController::class
+    "product" => ProductController::class,
+    "product-types" => ApiProductTypeController::class,
+    "product-categories" => ApiProductCategoryController::class,
 ]);

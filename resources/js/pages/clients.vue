@@ -89,10 +89,14 @@
             <td>{{ client.addr_number }}</td>
             <td>{{ client.addr_complement }}</td>
             <td>
-              <button @click="select(i)" class="btn btn-outline-dark btn-sm">
+              <button
+                @click="select(i)"
+                class="btn btn-outline-dark btn-sm"
+                type="button"
+              >
                 <i class="far fa-edit"></i>
               </button>
-              <button class="btn btn-outline-dark btn-sm">
+              <button class="btn btn-outline-dark btn-sm" type="button">
                 <i class="far fa-trash-alt"></i>
               </button>
             </td>
@@ -100,12 +104,11 @@
         </tbody>
       </table>
     </div>
-    {{ errors }}
   </app-layout>
 </template>
 
 <script>
-import appLayout from "../layouts/appLayout.vue";
+import appLayout from "../layouts/appLayout";
 import _ from "lodash";
 export default {
   components: { appLayout },

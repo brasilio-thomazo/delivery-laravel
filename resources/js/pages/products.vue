@@ -15,54 +15,56 @@
       </div>
       <div class="row mb-3">
         <div class="col-sm">
-          <label for="p_type" class="form-label">Tipo:</label>
+          <label for="id_type" class="form-label">Tipo:</label>
           <div class="input-group">
             <select
-              id="p_type"
+              id="id_type"
               class="form-select"
               v-model="form.id_type"
               required
             >
               <option
-                v-for="p_type in p_types"
-                :key="p_type.id"
-                v-bind:value="p_type.id"
+                v-for="type in types"
+                :key="type.id"
+                v-bind:value="type.id"
               >
-                {{ p_type.name }}
+                {{ type.name }}
               </option>
             </select>
             <button
               class="btn btn-outline-secondary"
               data-bs-toggle="modal"
               data-bs-target="#product_type"
+              type="button"
             >
-              <i class="bi bi-plus-square"></i>
+              <i class="far fa-plus-square"></i>
             </button>
           </div>
         </div>
         <div class="col-sm">
-          <label for="p_category" class="form-label">Categoria:</label>
+          <label for="id_category" class="form-label">Categoria:</label>
           <div class="input-group">
             <select
-              id="p_category"
+              id="id_category"
               class="form-select"
               v-model="form.id_category"
               required
             >
               <option
-                v-for="p_category in p_categories"
-                :key="p_category.id"
-                v-bind:value="p_category.id"
+                v-for="category in categories"
+                :key="category.id"
+                v-bind:value="category.id"
               >
-                {{ p_category.name }}
+                {{ category.name }}
               </option>
             </select>
             <button
               class="btn btn-outline-secondary"
               data-bs-toggle="modal"
               data-bs-target="#product_category"
+              type="button"
             >
-              <i class="bi bi-plus-square"></i>
+              <i class="far fa-plus-square"></i>
             </button>
           </div>
         </div>
@@ -133,14 +135,13 @@ import appLayout from "../layouts/appLayout.vue";
 import formProductCategory from "../components/forms/product-categories";
 import formProductType from "../components/forms/product-types";
 import _ from "lodash";
+import api from "../services/api";
 
 export default {
   components: { appLayout, formProductCategory, formProductType },
   props: {
     errors: Object,
-    products: Array,
-    types: Array,
-    categories: Array,
+    products: Array
   },
   data() {
     return {
@@ -150,10 +151,10 @@ export default {
         id_type: null,
         id_category: null,
         cost: null,
-        price: null,
+        price: null
       },
-      p_types: {},
-      p_categories: {},
+      types: [],
+      categories: []
     };
   },
   methods: {
@@ -171,11 +172,36 @@ export default {
         this.form[k] = null;
       });
     },
-    onSaveType() {},
-    onSaveCategory() {},
+    // Handle de evento ao clucluir o save de um novo tipo
+    onSaveType(obj) {
+      this.types = _.concat(this.types, obj);
+      this.form.id_type = obj.id;
+    },
+    // Handle de evento ao concluir o save de uma categoria
+    onSaveCategory(obj) {
+      this.categories = _.concat(this.categories, obj);
+      this.form.id_category = obj.id;
+    }
   },
   mounted() {
-    console.log("MOUNT");
-  },
+    // Busca os tipos registrados
+    api.get.product
+      .types()
+      .then(response => {
+        if (response.status === 200) {
+          this.types = response.data;
+        }
+      })
+      .catch(console.error);
+    // Busca as categorias registradas
+    api.get.product
+      .categories()
+      .then(response => {
+        if (response.status === 200) {
+          this.categories = response.data;
+        }
+      })
+      .catch(console.error);
+  }
 };
 </script>

@@ -3,17 +3,26 @@
     <div class="row mb-3">
       <div class="col-sm">
         <label for="name" class="form-label">Nome:</label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          v-model="form.name"
-          required
-        />
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            v-model="form.name"
+            required
+          />
+          <button
+            v-if="this.form.id !== null"
+            class="btn btn-outline-dark btn-sm"
+            @click="clear"
+            type="button"
+          >
+            <i class="fas fa-backspace"></i>
+          </button>
+        </div>
       </div>
     </div>
     <div class="table-responsive">
-      {{ form.name }}
       <table class="table">
         <thead>
           <tr>
@@ -28,13 +37,14 @@
             <td>{{ category.name }}</td>
             <td>
               <button
-                v-on:click="select(i)"
+                @click="select(i)"
                 class="btn btn-outline-dark btn-sm"
+                type="button"
               >
-                <i class="bi bi-pencil-square"></i>
+                <i class="far fa-edit"></i>
               </button>
-              <button class="btn btn-outline-dark btn-sm">
-                <i class="bi bi-trash"></i>
+              <button class="btn btn-outline-dark btn-sm" type="button">
+                <i class="far fa-trash-alt"></i>
               </button>
             </td>
           </tr>
@@ -47,26 +57,46 @@
 <script>
 import formModal from "./modal";
 import utils from "../../services/utils";
+import api from "../../services/api";
 export default {
   name: "form-product-category",
   components: { formModal },
   props: {
     categories: Array,
-    id: String,
+    id: String
   },
   data() {
     return {
       form: {
         id: null,
-        name: null,
-      },
+        name: null
+      }
     };
   },
   methods: {
     select(i) {
       utils.select(this.categories, this.form, i);
     },
-    onSubmit() {},
-  },
+    clear() {
+      utils.clear(this.form);
+    },
+
+    onSubmit() {
+      if (this.form.id !== null) {
+        return;
+      }
+      api.post.product
+        .categories(this.form)
+        .then(response => {
+          if (response.status === 201) {
+            utils.clear(this.form);
+            this.$emit("save", response.data);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
 };
 </script>

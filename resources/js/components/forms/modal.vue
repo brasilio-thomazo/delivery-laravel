@@ -25,13 +25,12 @@
 export default {
   props: {
     id: String,
-    title: String,
-    html: Object,
+    title: String
   },
   methods: {
     onSubmit(evt) {
       this.$emit("submit", evt);
-    },
-  },
+    }
+  }
 };
 </script>
