@@ -1,5 +1,5 @@
 <template>
-  <form-modal v-bind:id="id" title="Tipos de produto" @submit="onSubmit">
+  <form-modal v-bind:id="id" title="Categorias de produto" @submit="onSubmit">
     <div class="row mb-3">
       <div class="col-sm">
         <label for="name" class="form-label">Nome:</label>
@@ -23,9 +23,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(type, i) in types" :key="type.id">
-            <td>{{ type.id }}</td>
-            <td>{{ type.name }}</td>
+          <tr v-for="(p_category, i) in dt" :key="p_category.id">
+            <td>{{ p_category.id }}</td>
+            <td>{{ p_category.name }}</td>
             <td>
               <button
                 v-on:click="select(i)"
@@ -45,14 +45,16 @@
 </template>
 
 <script>
-import formModal from "./modal";
-import utils from "../../services/utils";
+import FormModal from "./FormModal";
+import api from "../services/api";
+import _ from "lodash";
+
 export default {
-  name: "form-product-type",
-  components: { formModal },
+  name: "FormProductCategory",
+  components: { FormModal },
   props: {
-    types: Array,
     id: String,
+    dt: Array,
   },
   data() {
     return {
@@ -63,10 +65,22 @@ export default {
     };
   },
   methods: {
-    select(i) {
-      utils.select(this.types, this.form, i);
+    onSubmit(evt) {
+      if (this.form.id != null) {
+        console.log("PUT");
+        return;
+      }
+      api.product.postCategory(this.form).then((response) => {
+        if (response.status === 201) {
+          this.form = { id: null, name: null };
+          this.$emit("save", response.data);
+        }
+      });
     },
-    onSubmit() {},
+    select(index) {
+      this.form.id = this.p_categories[index].id;
+      this.form.name = this.p_categories[index].name;
+    },
   },
 };
 </script>

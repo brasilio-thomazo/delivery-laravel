@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+use App\Models\ProductType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\Rule;
-use Inertia\Inertia;
 
-class ClientController extends Controller
+class ProductTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,7 +14,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        return Inertia::render('clients', ['clients' => Client::all()]);
+        //
     }
 
     /**
@@ -38,24 +35,16 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            "name" => ['required', Rule::unique('clients', 'name')->where('phone', $request->phone), 'max:50'],
-            "phone" => ['required', 'unique:clients,name', 'max:20'],
-            "address" => ['required'],
-            "addr_number" => ['required', 'numeric'],
-        ]);
-        $client = new Client($request->all());
-        $client->save();
-        return Redirect::route("clients.index");
+        //
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\ProductType  $productType
      * @return \Illuminate\Http\Response
      */
-    public function show(Client $client)
+    public function show(ProductType $productType)
     {
         //
     }
@@ -63,10 +52,10 @@ class ClientController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\ProductType  $productType
      * @return \Illuminate\Http\Response
      */
-    public function edit(Client $client)
+    public function edit(ProductType $productType)
     {
         //
     }
@@ -75,10 +64,10 @@ class ClientController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\ProductType  $productType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Client $client)
+    public function update(Request $request, ProductType $productType)
     {
         //
     }
@@ -86,10 +75,10 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\ProductType  $productType
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Client $client)
+    public function destroy(ProductType $productType)
     {
         //
     }

@@ -23,9 +23,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(type, i) in types" :key="type.id">
-            <td>{{ type.id }}</td>
-            <td>{{ type.name }}</td>
+          <tr v-for="(p_type, i) in dt" :key="p_type.id">
+            <td>{{ p_type.id }}</td>
+            <td>{{ p_type.name }}</td>
             <td>
               <button
                 v-on:click="select(i)"
@@ -45,14 +45,15 @@
 </template>
 
 <script>
-import formModal from "./modal";
-import utils from "../../services/utils";
+import FormModal from "./FormModal";
+import api from "../services/api";
+
 export default {
-  name: "form-product-type",
-  components: { formModal },
+  name: "FormProductType",
+  components: { FormModal },
   props: {
-    types: Array,
     id: String,
+    dt: Array,
   },
   data() {
     return {
@@ -63,10 +64,22 @@ export default {
     };
   },
   methods: {
-    select(i) {
-      utils.select(this.types, this.form, i);
+    onSubmit(evt) {
+      if (this.form.id != null) {
+        console.log("PUT");
+        return;
+      }
+      api.product.postType(this.form).then((response) => {
+        if (response.status === 201) {
+          this.form = { id: null, name: null };
+          this.$emit("save", response.data);
+        }
+      });
     },
-    onSubmit() {},
+    select(index) {
+      this.form.id = this.dt[index].id;
+      this.form.name = this.dt[index].name;
+    },
   },
 };
 </script>

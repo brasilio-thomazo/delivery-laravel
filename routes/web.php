@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ProductController;
+use App\Models\Product;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -18,6 +21,11 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('home', []);
 });
+
+Route::resources([
+    'clients' => ClientController::class,
+    'products' => ProductController::class
+]);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');

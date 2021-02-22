@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <app-layout>
     <form @submit.prevent="onSubmit">
       <div class="row mb-3">
         <div class="col-sm">
@@ -7,7 +7,7 @@
           <input
             type="text"
             id="name"
-            v-model="product.name"
+            v-model="form.name"
             class="form-control"
             required
           />
@@ -20,7 +20,7 @@
             <select
               id="p_type"
               class="form-select"
-              v-model="product.p_type"
+              v-model="form.id_type"
               required
             >
               <option
@@ -46,7 +46,7 @@
             <select
               id="p_category"
               class="form-select"
-              v-model="product.p_category"
+              v-model="form.id_category"
               required
             >
               <option
@@ -72,7 +72,12 @@
           <label for="description" class="form-label"
             >Descri&ccedil;&atilde;o:</label
           >
-          <textarea id="description" rows="3" class="form-control"></textarea>
+          <textarea
+            id="description"
+            v-model="form.description"
+            rows="3"
+            class="form-control"
+          ></textarea>
         </div>
       </div>
       <div class="row mb-3">
@@ -84,7 +89,7 @@
               locale="pt-br"
               class="form-control"
               v-bind:auto-decimal-mode="true"
-              v-model="product.cost"
+              v-model="form.cost"
               required
             />
           </div>
@@ -97,7 +102,7 @@
               locale="pt-br"
               class="form-control"
               v-bind:auto-decimal-mode="true"
-              v-model="product.price"
+              v-model="form.price"
               required
             />
           </div>
@@ -112,69 +117,65 @@
     <form-product-type
       id="product_type"
       @save="onSaveType"
-      v-bind:dt="p_types"
+      v-bind:types="types"
     />
     <form-product-category
       id="product_category"
-      v-bind:dt="p_categories"
+      v-bind:categories="categories"
       @save="onSaveCategory"
     />
-  </div>
+    {{ errors }}
+  </app-layout>
 </template>
 
 <script>
+import appLayout from "../layouts/appLayout.vue";
+import formProductCategory from "../components/forms/product-categories";
+import formProductType from "../components/forms/product-types";
 import _ from "lodash";
-import api from "../services/api";
-import FormProductType from "../components/FormProductType";
-import FormProductCategory from "../components/FormProductCategory";
-import FormModal from "../components/FormModal";
+
 export default {
-  components: { FormProductType, FormProductCategory, FormModal },
-  name: "products",
+  components: { appLayout, formProductCategory, formProductType },
+  props: {
+    errors: Object,
+    products: Array,
+    types: Array,
+    categories: Array,
+  },
   data() {
     return {
-      product: {
+      form: {
         id: null,
         name: null,
-        p_type: null,
-        p_category: null,
-        cost: 0,
-        price: 0,
+        id_type: null,
+        id_category: null,
+        cost: null,
+        price: null,
       },
-      p_types: [],
-      p_categories: [],
+      p_types: {},
+      p_categories: {},
     };
   },
-  mounted() {
-    api.product
-      .getCategory()
-      .then((response) => {
-        if (response.status === 200) {
-          this.p_categories = response.data;
-        }
-      })
-      .catch(console.error);
-
-    api.product
-      .getType()
-      .then((response) => {
-        if (response.status === 200) {
-          this.p_types = response.data;
-        }
-      })
-      .catch(console.error);
-  },
   methods: {
-    onSaveCategory(p_category) {
-      this.p_categories = _.concat(this.p_categories, p_category);
-      this.product.p_category = p_category.id;
+    onSubmit() {
+      if (this.form.id === null) this.$inertia.post("products", this.form);
+      else this.$inertia.put(`products/${this.form.id}`, this.form);
     },
-    onSaveType(p_type) {
-      this.p_types = _.concat(this.p_types, p_type);
-      this.product.p_type = p_type.id;
-      console.log(p_type);
+    select(index) {
+      _.forEach(this.products[index], (v, k) => {
+        this.form[k] = v;
+      });
     },
-    onSubmit(evt) {},
+    clear() {
+      _.forEach(this.form, (v, k) => {
+        this.form[k] = null;
+      });
+    },
+    onSaveType() {},
+    onSaveCategory() {},
+  },
+  mounted() {
+    console.log("MOUNT");
   },
 };
 </script>

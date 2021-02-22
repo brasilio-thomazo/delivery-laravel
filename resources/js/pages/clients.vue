@@ -55,9 +55,7 @@
       </div>
       <div class="row mb-3">
         <div class="col-sm">
-          <button class="btn btn-outline-dark" type="submit">
-            Salvar
-          </button>
+          <button class="btn btn-outline-dark" type="submit">Salvar</button>
           <button
             @click="clear"
             type="button"
@@ -102,14 +100,15 @@
         </tbody>
       </table>
     </div>
+    {{ errors }}
   </app-layout>
 </template>
 
 <script>
-import AppLayout from "../Layouts/AppLayout.vue";
+import appLayout from "../layouts/appLayout.vue";
 import _ from "lodash";
 export default {
-  components: { AppLayout },
+  components: { appLayout },
   props: {
     errors: Object,
     clients: Array,
@@ -142,6 +141,8 @@ export default {
       });
     },
   },
-  mounted() {},
+  mounted() {
+    console.log("MOUNT");
+  },
 };
 </script>

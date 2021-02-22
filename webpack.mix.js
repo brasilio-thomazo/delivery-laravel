@@ -16,7 +16,7 @@ mix
   .vue()
   .postCss("resources/css/app.css", "public/css", [
     require("postcss-import"),
-    require("tailwindcss"),
+    //require("tailwindcss"),
     require("autoprefixer"),
   ])
   .webpackConfig(require("./webpack.config"));
