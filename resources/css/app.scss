@@ -1,1 +1,17 @@
 @import "~bootstrap";
+
+#product_type,
+#product_category {
+  .modal-body {
+    .table-responsive {
+      max-height: 200px;
+    }
+  }
+}
+
+.table-responsive {
+  .actions {
+    width: 90px;
+    text-align: center;
+  }
+}

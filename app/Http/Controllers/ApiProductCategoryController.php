@@ -69,6 +69,8 @@ class ApiProductCategoryController extends Controller
      */
     public function destroy(ProductCategory $productCategory)
     {
-        //
+        $response = response($productCategory, 201);
+        $productCategory->delete();
+        return $response;
     }
 }

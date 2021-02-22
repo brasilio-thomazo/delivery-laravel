@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProductController;
-use App\Models\Product;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 

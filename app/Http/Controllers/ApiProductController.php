@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ApiProductController extends Controller
 {
@@ -14,7 +16,7 @@ class ApiProductController extends Controller
      */
     public function index()
     {
-        //
+        return response(Product::all(), 200);
     }
 
     /**
@@ -25,7 +27,27 @@ class ApiProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => [
+                    'required',
+                    Rule::unique('products')
+                        ->where('id_type', $request->id_type)
+                        ->where('id_category', $request->id_category)
+                ],
+                'id_type' => ['required', 'numeric'],
+                'id_category' => ['required', 'numeric'],
+                'cost' => ['required', 'numeric'],
+                'price' => ['required', 'numeric'],
+            ]
+        );
+
+        $validator->validate();
+
+        $product = new Product($request->all());
+        $product->save();
+        return response($product, 201);
     }
 
     /**

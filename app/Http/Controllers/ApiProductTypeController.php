@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProductType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class ApiProductTypeController extends Controller
@@ -26,9 +27,15 @@ class ApiProductTypeController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => ['required', 'unique:product_types,name']
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => ['required', Rule::unique('product_types')]
+            ]
+        );
+
+        $validator->validate();
+
         $productType = new ProductType($request->all());
         $productType->save();
         return response($productType, 201);
@@ -69,8 +76,8 @@ class ApiProductTypeController extends Controller
      */
     public function destroy(ProductType $productType)
     {
-        $id = $productType->id;
+        $response = response($productType, 201);
         $productType->delete();
-        return response(['deleted' => $id], 201);
+        return $response;
     }
 }

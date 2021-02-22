@@ -12,6 +12,9 @@
             required
           />
         </div>
+        <div v-if="form.errors.name" class="form-text text-danger">
+          {{ form.errors.name }}
+        </div>
       </div>
       <div class="row mb-3">
         <div class="col-sm">
@@ -40,6 +43,9 @@
               <i class="far fa-plus-square"></i>
             </button>
           </div>
+          <div v-if="form.errors.id_type" class="form-text text-danger">
+            {{ form.errors.id_type }}
+          </div>
         </div>
         <div class="col-sm">
           <label for="id_category" class="form-label">Categoria:</label>
@@ -67,6 +73,9 @@
               <i class="far fa-plus-square"></i>
             </button>
           </div>
+          <div v-if="form.errors.id_category" class="form-text text-danger">
+            {{ form.errors.id_category }}
+          </div>
         </div>
       </div>
       <div class="row mb-3">
@@ -80,6 +89,9 @@
             rows="3"
             class="form-control"
           ></textarea>
+          <div v-if="form.errors.description" class="form-text text-danger">
+            {{ form.errors.description }}
+          </div>
         </div>
       </div>
       <div class="row mb-3">
@@ -95,6 +107,9 @@
               required
             />
           </div>
+          <div v-if="form.errors.cost" class="form-text text-danger">
+            {{ form.errors.id_type }}
+          </div>
         </div>
         <div class="col-sm">
           <label for="cost" class="form-label">Venda:</label>
@@ -108,25 +123,80 @@
               required
             />
           </div>
+          <div v-if="form.errors.price" class="form-text text-danger">
+            {{ form.errors.id_type }}
+          </div>
         </div>
       </div>
       <div class="row mb-3">
         <div class="col-sm">
+          <button
+            v-if="form.id"
+            type="button"
+            @click="clear"
+            class="btn btn-outline-dark"
+          >
+            Novo
+          </button>
           <button type="submit" class="btn btn-outline-dark">Salvar</button>
         </div>
       </div>
     </form>
     <form-product-type
       id="product_type"
-      @save="onSaveType"
       v-bind:types="types"
+      @save="onSaveType"
+      @onDelete="onDeleteType"
     />
     <form-product-category
       id="product_category"
       v-bind:categories="categories"
       @save="onSaveCategory"
+      @onDelete="onDeleteCategory"
     />
-    {{ errors }}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>Categoria</th>
+            <th>Descri&ccedil;&atilde;o</th>
+            <th>(R$)Custo</th>
+            <th>(R$)Venda</th>
+            <th class="actions">A&ccedil;&otilde;es</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(product, i) in products" :key="product.id">
+            <td>{{ product.id }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.id_type }}</td>
+            <td>{{ product.id_category }}</td>
+            <td>{{ product.description }}</td>
+            <td>{{ product.cost }}</td>
+            <td>{{ product.price }}</td>
+            <td class="actions">
+              <button
+                @click="select(i)"
+                class="btn btn-outline-dark btn-sm"
+                type="button"
+              >
+                <i class="far fa-edit"></i>
+              </button>
+              <button
+                @click="handleDelete(type.id)"
+                class="btn btn-outline-dark btn-sm"
+                type="button"
+              >
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </app-layout>
 </template>
 
@@ -136,51 +206,81 @@ import formProductCategory from "../components/forms/product-categories";
 import formProductType from "../components/forms/product-types";
 import _ from "lodash";
 import api from "../services/api";
+import { Inertia } from "@inertiajs/inertia";
 
 export default {
   components: { appLayout, formProductCategory, formProductType },
   props: {
-    errors: Object,
     products: Array
   },
   data() {
     return {
-      form: {
+      form: this.$inertia.form({
         id: null,
         name: null,
+        description: null,
         id_type: null,
         id_category: null,
         cost: null,
         price: null
-      },
+      }),
       types: [],
       categories: []
     };
   },
+  watch: {
+    form: {
+      wasSuccessful() {
+        console.log("OK");
+      }
+    }
+  },
   methods: {
     onSubmit() {
-      if (this.form.id === null) this.$inertia.post("products", this.form);
+      if (this.form.id === null) this.form.post("products");
       else this.$inertia.put(`products/${this.form.id}`, this.form);
     },
+
     select(index) {
       _.forEach(this.products[index], (v, k) => {
         this.form[k] = v;
       });
     },
+
     clear() {
-      _.forEach(this.form, (v, k) => {
-        this.form[k] = null;
-      });
+      this.form.reset();
     },
+
     // Handle de evento ao clucluir o save de um novo tipo
     onSaveType(obj) {
-      this.types = _.concat(this.types, obj);
+      var index = _.findIndex(this.types, { id: obj.id });
+      if (index >= 0) this.types.splice(index, 1, obj);
+      else this.types = _.concat(this.types, obj);
       this.form.id_type = obj.id;
     },
+
     // Handle de evento ao concluir o save de uma categoria
     onSaveCategory(obj) {
-      this.categories = _.concat(this.categories, obj);
+      var index = _.findIndex(this.categories, { id: obj.id });
+      if (index >= 0) this.categories.splice(index, 1, obj);
+      else this.categories = _.concat(this.categories, obj);
       this.form.id_category = obj.id;
+    },
+
+    // Handle de envento ao deletar um tipo
+    onDeleteType(data) {
+      if (this.form.id_type === data.id) this.form.id_type = null;
+      this.types = _.remove(this.types, t => {
+        return t.id !== data.id;
+      });
+    },
+
+    // Handle de envento ao deletar uma categoria
+    onDeleteCategory(data) {
+      if (this.form.id_category === data.id) this.form.id_category = null;
+      this.categories = _.remove(this.categories, category => {
+        return category.id !== data.id;
+      });
     }
   },
   mounted() {
@@ -193,6 +293,7 @@ export default {
         }
       })
       .catch(console.error);
+
     // Busca as categorias registradas
     api.get.product
       .categories()
@@ -202,6 +303,10 @@ export default {
         }
       })
       .catch(console.error);
+
+    Inertia.on("success", () => {
+      this.form.reset();
+    });
   }
 };
 </script>

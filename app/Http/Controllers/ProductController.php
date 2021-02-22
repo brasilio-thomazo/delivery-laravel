@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -39,7 +43,26 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => [
+                    'required',
+                    Rule::unique('products')
+                        ->where('id_type', $request->id_type)
+                        ->where('id_category', $request->id_category)
+                ],
+                'id_type' => ['required', 'numeric'],
+                'id_category' => ['required', 'numeric'],
+                'cost' => ['required', 'numeric'],
+                'price' => ['required', 'numeric'],
+            ]
+        );
+        $validator->validate();
+
+        $product = new Product($request->all());
+        $product->save();
+        return Redirect::route("products.index");
     }
 
     /**

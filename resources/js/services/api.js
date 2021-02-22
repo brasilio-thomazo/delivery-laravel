@@ -1,4 +1,5 @@
 import axios from "axios";
+import utils from "./utils";
 
 const http = axios.create({
   baseURL: "/api/"
@@ -8,21 +9,13 @@ const options = {
   //headers: { "Content-type": "application/json" },
 };
 
-const clientReplace = (k, v) => {
-  let value = v;
-  if (k === "phone") {
-    value = v.replace(/[^0-9]/g, "");
-  }
-  return value === "" ? null : value;
-};
-
 export default {
   get: {
     clients() {
-      return http.get("clients/");
+      return http.get("clients");
     },
     produts() {
-      return http.get("products/");
+      return http.get("products");
     },
     product: {
       types() {
@@ -35,15 +28,56 @@ export default {
   },
   post: {
     clients(data) {
-      let json = JSON.stringify(data, clientReplace);
-      return http.post("clients", json, options);
+      return http.post("clients", utils.replaceClient(data), options);
+    },
+    products(data) {
+      return http.post("products", utils.replaceBlank(data), options);
     },
     product: {
       types(data) {
-        return http.post("product-types", data, options);
+        return http.post("product-types", utils.replaceBlank(data), options);
       },
       categories(data) {
-        return http.post("product-categories", data, options);
+        return http.post(
+          "product-categories",
+          utils.replaceBlank(data),
+          options
+        );
+      }
+    }
+  },
+  put: {
+    clients(data) {
+      return http.put(`clients/${data.id}`, utils.replaceClient(data));
+    },
+    products(data) {
+      return http.put(`products/${data.id}`, utils.replaceBlank(data));
+    },
+    product: {
+      types(data) {
+        return http.put(`product-types/${data.id}`, utils.replaceBlank(data));
+      },
+      categories(data) {
+        return http.put(
+          `product-categories/${data.id}`,
+          utils.replaceBlank(data)
+        );
+      }
+    }
+  },
+  delete: {
+    clients(id) {
+      return http.delete(`clients/${id}`);
+    },
+    products(id) {
+      return http.delete(`products/${id}`);
+    },
+    product: {
+      types(id) {
+        return http.delete(`product-types/${id}`);
+      },
+      categories(id) {
+        return http.delete(`product-categories/${id}`);
       }
     }
   }

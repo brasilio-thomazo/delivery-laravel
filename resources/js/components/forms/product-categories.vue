@@ -20,6 +20,9 @@
             <i class="fas fa-backspace"></i>
           </button>
         </div>
+        <div v-if="errors.name" class="form-text text-danger">
+          {{ errors.name[0] }}
+        </div>
       </div>
     </div>
     <div class="table-responsive">
@@ -43,7 +46,11 @@
               >
                 <i class="far fa-edit"></i>
               </button>
-              <button class="btn btn-outline-dark btn-sm" type="button">
+              <button
+                @click="handleDelete(category.id)"
+                class="btn btn-outline-dark btn-sm"
+                type="button"
+              >
                 <i class="far fa-trash-alt"></i>
               </button>
             </td>
@@ -70,21 +77,52 @@ export default {
       form: {
         id: null,
         name: null
-      }
+      },
+      errors: {}
     };
   },
   methods: {
     select(i) {
+      this.errors = {};
       utils.select(this.categories, this.form, i);
     },
+
     clear() {
+      this.errors = {};
       utils.clear(this.form);
     },
 
+    handleDelete(id) {
+      this.errors = {};
+      if (/^[0-9]+$/.test(id)) {
+        api.delete.product
+          .categories(id)
+          .then(response => {
+            if (response.status === 201) this.$emit("onDelete", response.data);
+          })
+          .catch(errors => {
+            if (errors.response) this.errors = errors.response.data.errors;
+          });
+      }
+    },
+
     onSubmit() {
-      if (this.form.id !== null) {
+      this.errors = {};
+      if (/^[0-9]+$/.test(this.form.id)) {
+        api.put.product
+          .categories(this.form)
+          .then(response => {
+            if (response.status === 201) {
+              utils.clear(this.form);
+              this.$emit("save", response.data);
+            }
+          })
+          .catch(errors => {
+            if (errors.response) this.errors = errors.response.data.errors;
+          });
         return;
       }
+
       api.post.product
         .categories(this.form)
         .then(response => {
@@ -93,8 +131,8 @@ export default {
             this.$emit("save", response.data);
           }
         })
-        .catch(err => {
-          console.log(err);
+        .catch(errors => {
+          if (errors.response) this.errors = errors.response.data.errors;
         });
     }
   }
