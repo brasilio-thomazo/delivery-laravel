@@ -88,7 +88,7 @@ export default {
       api.post.product
         .types(this.form)
         .then(response => {
-          if (response.status === 200) {
+          if (response.status === 201) {
             utils.clear(this.form);
             this.$emit("save", response.data);
           }

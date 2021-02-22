@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const http = axios.create({
-  baseURL: "http://localhost:8000/api"
+  baseURL: "/api/"
 });
 
 const options = {
@@ -26,24 +26,24 @@ export default {
     },
     product: {
       types() {
-        return http.get("product-types/");
+        return http.get("product-types");
       },
       categories() {
-        return http.get("product-categories/");
+        return http.get("product-categories");
       }
     }
   },
   post: {
     clients(data) {
       let json = JSON.stringify(data, clientReplace);
-      return http.post("clients/", json, options);
+      return http.post("clients", json, options);
     },
     product: {
       types(data) {
-        return http.post("product-types/", data, options);
+        return http.post("product-types", data, options);
       },
       categories(data) {
-        return http.post("product-categories/", data, options);
+        return http.post("product-categories", data, options);
       }
     }
   }

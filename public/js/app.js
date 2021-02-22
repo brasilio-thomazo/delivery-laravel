@@ -5214,7 +5214,7 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       _services_api__WEBPACK_IMPORTED_MODULE_2__.default.post.product.types(this.form).then(function (response) {
-        if (response.status === 200) {
+        if (response.status === 201) {
           _services_utils__WEBPACK_IMPORTED_MODULE_1__.default.clear(_this.form);
 
           _this.$emit("save", response.data);
@@ -5801,7 +5801,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 
 var http = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
-  baseURL: "http://localhost:8000/api"
+  baseURL: "/api/"
 });
 var options = {//headers: { "Content-type": "application/json" },
 };
@@ -5826,24 +5826,24 @@ var clientReplace = function clientReplace(k, v) {
     },
     product: {
       types: function types() {
-        return http.get("product-types/");
+        return http.get("product-types");
       },
       categories: function categories() {
-        return http.get("product-categories/");
+        return http.get("product-categories");
       }
     }
   },
   post: {
     clients: function clients(data) {
       var json = JSON.stringify(data, clientReplace);
-      return http.post("clients/", json, options);
+      return http.post("clients", json, options);
     },
     product: {
       types: function types(data) {
-        return http.post("product-types/", data, options);
+        return http.post("product-types", data, options);
       },
       categories: function categories(data) {
-        return http.post("product-categories/", data, options);
+        return http.post("product-categories", data, options);
       }
     }
   }
